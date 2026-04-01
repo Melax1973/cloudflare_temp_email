@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    # ✅ 强制所有 JavaScript Actions 在 Node 24 环境下运行
+    # ✅ 强制所有 JavaScript Actions 在 Node 24 环境下运行 (保持这个设置以消除 Action 警告)
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 22 # ✅ 已改回：项目运行环境使用 Node.js 22
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -40,7 +40,7 @@ jobs:
           
           if [ -n "$use_worker_assets" ]; then
             cd frontend/
-            # ✅ 修复：使用环境变量允许构建脚本，而不是命令行参数
+            # ✅ 修复：使用环境变量允许构建脚本
             pnpm install --no-frozen-lockfile
             if [ -n "$use_worker_assets_with_telegram" ]; then
               echo "Building with telegram pages"
@@ -59,7 +59,7 @@ jobs:
           # ✅ 修复核心：使用环境变量写入，避免 Shell 解析特殊字符
           printf '%s\n' "$WRANGLER_TOML_CONTENT" > wrangler.toml
           
-          # ✅ 修复：这里不再使用 --allow-build，而是依赖下面的 env 配置
+          # ✅ 修复：依赖下方的 env 配置来解决构建脚本问题
           pnpm install --no-frozen-lockfile
 
           if [ -n "$use_mail_wasm_parser" ]; then
@@ -86,5 +86,4 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           WRANGLER_TOML_CONTENT: ${{ secrets.BACKEND_TOML }}
           # ✅ 核心修复：设置 pnpm 环境变量，允许运行所有必要的构建脚本 (esbuild, workerd 等)
-          # 这会告诉 pnpm 忽略安全限制，允许运行 install 脚本
           PNPM_ENABLE_NONPRODUCTION_POSTINSTALL: 1
