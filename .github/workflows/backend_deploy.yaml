@@ -29,6 +29,9 @@ jobs:
         with:
           version: 10
           run_install: false
+        # ✅ 在这里添加：强制该 Action 在 Node.js 24 环境下运行
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Deploy Backend for ${{ github.ref_name }}
         run: |
@@ -81,3 +84,5 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           # ✅ 将 secret 映射到环境变量中
           WRANGLER_TOML_CONTENT: ${{ secrets.BACKEND_TOML }}
+          # ✅ 建议：也可以在这里加上，确保整个部署流程的 JS Actions 都使用 Node 24
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
